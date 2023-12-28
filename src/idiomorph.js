@@ -348,43 +348,28 @@ var Idiomorph = (function () {
          * @param ctx the merge context
          */
         function syncInputValue(from, to, ctx) {
-            if (from instanceof HTMLInputElement &&
-                to instanceof HTMLInputElement &&
-                from.type !== 'file') {
-
-                let fromValue = from.value;
-                let toValue = to.value;
-
-                // sync boolean attributes
-                syncBooleanAttribute(from, to, 'checked', ctx);
-                syncBooleanAttribute(from, to, 'disabled', ctx);
-
-                if (!from.hasAttribute('value')) {
-                    if (!ignoreAttribute('value', to, 'remove', ctx)) {
-                        to.value = '';
-                        to.removeAttribute('value');
-                    }
-                } else if (fromValue !== toValue) {
-                    if (!ignoreAttribute('value', to, 'update', ctx)) {
-                        to.setAttribute('value', fromValue);
-                        to.value = fromValue;
-                    }
-                }
-            } else if (from instanceof HTMLOptionElement) {
-                syncBooleanAttribute(from, to, 'selected', ctx)
-            } else if (from instanceof HTMLTextAreaElement && to instanceof HTMLTextAreaElement) {
-                let fromValue = from.value;
-                let toValue = to.value;
-                if (ignoreAttribute('value', to, 'update', ctx)) {
-                    return;
-                }
-                if (fromValue !== toValue) {
-                    to.value = fromValue;
-                }
-                if (to.firstChild && to.firstChild.nodeValue !== fromValue) {
-                    to.firstChild.nodeValue = fromValue
-                }
+          if (
+            from instanceof HTMLInputElement &&
+            to instanceof HTMLInputElement &&
+            from.type !== "file"
+          ) {
+            if (
+              from.getAttribute("value") !== to.getAttribute("value") &&
+              !ignoreAttribute("value", to, "update", ctx)
+            ) {
+              to.value = from.getAttribute("value") ?? "";
             }
+          } else if (
+            from instanceof HTMLTextAreaElement &&
+            to instanceof HTMLTextAreaElement
+          ) {
+            if (ignoreAttribute("value", to, "update", ctx)) {
+              return;
+            }
+            if (from.defaultValue !== to.defaultValue) {
+              to.value = from.value;
+            }
+          }
         }
 
         //=============================================================================
